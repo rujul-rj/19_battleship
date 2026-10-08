@@ -44,7 +44,8 @@ class Battleship:
                 print("Use row,col.")
                 continue
 
-            if not (0 <= pos[0] < Board.SIZE and 0 <= pos[1] < Board.SIZE):
+            if not (0 <= pos[0] < Board.SIZE and
+                    0 <= pos[1] < Board.SIZE):
                 print("Outside board.")
                 continue
 
@@ -56,9 +57,11 @@ class Battleship:
 
             if result == "miss":
                 print("MISS!")
+
             elif result == "hit":
                 print("HIT!")
                 print(f"Ship {ship_index + 1} hit.")
+
             elif result == "sunk":
                 print("HIT!")
                 print(f"Ship {ship_index + 1} sunk.")
@@ -78,11 +81,18 @@ class Battleship:
                 f"{ai_pos[0] + 1},{ai_pos[1] + 1}"
             )
 
-            ai_result, _ = self.player.fire(ai_pos)
+            ai_result, ai_ship_index = self.player.fire(ai_pos)
 
-            ai_hit = ai_result in ("hit", "sunk")
+            if ai_result == "hit":
+                print("AI HIT!")
 
-            if ai_hit:
-                print("AI scored a hit.")
+            elif ai_result == "sunk":
+                print(f"AI SUNK Ship {ai_ship_index + 1}!")
 
-            self.ai.record_result(ai_pos, ai_hit)
+            elif ai_result == "miss":
+                print("AI MISS!")
+
+            self.ai.record_result(
+                ai_pos,
+                ai_result in ("hit", "sunk")
+            )
