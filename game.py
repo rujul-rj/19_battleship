@@ -10,17 +10,28 @@ class Battleship:
         self._setup()
 
     def _setup(self):
-        self.player.place_ship({(0, 0), (0, 1), (0, 2)})
-        self.enemy.place_ship({(1, 1), (1, 2), (1, 3)})
+        self.player.place_ship({(1, 1), (1, 2)})
+        self.player.place_ship({(3, 3), (3, 4), (3, 5)})
+
+        self.enemy.place_ship({(1, 1), (1, 2)})
+        self.enemy.place_ship({(2, 2), (2, 3), (2, 4)})
 
     def show(self):
         print("\nYour shots are coordinates like 2,3.")
-        print("Ship cells remaining:", len(self.enemy.ships - self.enemy.shots))
+
+        remaining = sum(
+            len(ship) - len(self.enemy.ship_hits[index])
+            for index, ship in enumerate(self.enemy.ships)
+        )
+
+        print("Ship cells remaining:", remaining)
 
     def run(self):
         print("Battleship")
+
         while True:
             self.show()
+
             raw = input("> ").strip().lower()
 
             if raw == "q":
@@ -37,19 +48,28 @@ class Battleship:
                 print("Outside board.")
                 continue
 
-            if pos in self.enemy.shots:
+            result, ship_index = self.enemy.fire(pos)
+
+            if result == "already_shot":
                 print("Already fired there.")
                 continue
 
-            print("HIT!" if self.enemy.fire(pos) else "MISS!")
+            if result == "miss":
+                print("MISS!")
+            elif result == "hit":
+                print("HIT!")
+                print(f"Ship {ship_index + 1} hit.")
+            elif result == "sunk":
+                print("HIT!")
+                print(f"Ship {ship_index + 1} sunk.")
 
             if self.enemy.all_sunk():
-                print("You sank the fleet.")
+                print("You sank the entire fleet.")
                 return
 
             ai_pos = self.ai.choose()
 
             print("AI fired at", f"{ai_pos[0] + 1},{ai_pos[1] + 1}")
 
-            if ai_pos in self.player.ships:
+            if ai_pos in self.player.ships[0]:
                 print("AI scored a hit.")
