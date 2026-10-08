@@ -69,7 +69,20 @@ class Battleship:
 
             ai_pos = self.ai.choose()
 
-            print("AI fired at", f"{ai_pos[0] + 1},{ai_pos[1] + 1}")
+            if ai_pos is None:
+                print("AI has no valid moves left.")
+                return
 
-            if ai_pos in self.player.ships[0]:
+            print(
+                "AI fired at",
+                f"{ai_pos[0] + 1},{ai_pos[1] + 1}"
+            )
+
+            ai_result, _ = self.player.fire(ai_pos)
+
+            ai_hit = ai_result in ("hit", "sunk")
+
+            if ai_hit:
                 print("AI scored a hit.")
+
+            self.ai.record_result(ai_pos, ai_hit)
